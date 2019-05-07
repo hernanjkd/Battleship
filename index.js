@@ -21,7 +21,7 @@ let board = [];
             arr.push(0);
 
             let square = document.createElement('div');
-            square.className = 's'+y+x; document.write('----------'+square.className);
+            square.className = 's'+y+x;
             //square.id=''+y+x;
             row.appendChild(square);
         }
