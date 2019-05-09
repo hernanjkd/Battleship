@@ -160,8 +160,10 @@ function shoot(element) {
         }
 
         // Check to see if the player won or lost
-        if (missed_shots_available === 0)
+        if (missed_shots_available === 0) {
             window.alert('TRY AGAIN.. RELOAD PAGE');
+            location.reload();
+        }
 
         else if (number_of_hits_to_win === 0)
             window.alert("YOU'VE WON!");
