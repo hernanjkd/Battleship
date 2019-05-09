@@ -148,11 +148,12 @@ function shoot(element) {
         // HIT
         if (board[r][c] > 0) {
             e.style.background = 'red';
+            board[r][c] = -1;
             number_of_hits_to_win--;
         }
 
         // MISSED
-        else {
+        else if (board[r][c] !== -1) {
             e.style.background = 'gray';
             setTimeout( () => e.style.background = '#0ca4ff', 5000);
             missed_shots_available--;
