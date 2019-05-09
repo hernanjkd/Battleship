@@ -1,14 +1,30 @@
 
 let board_div = document.querySelector('.board');
-board_div.addEventListener('click', shoot, false);
 let num_rows = 10;
 let num_cols = 10;
+
+// Position board in the middle
+board_div.style.width = (num_cols * 40) + 'px';
+board_div.style.height = (num_rows * 40) + 'px';
+board_div.style.margin = '5% auto 0px auto';
+
+// Add event listeners
+board_div.addEventListener('click', shoot);
+
+let ready_button = document.querySelector('.ready');
+ready_button.addEventListener('click', show);
+
+// Set global variables. Adding each ship will increment the number of hits to win
+let number_of_hits_to_win = 0;
+let missed_shots_available = 3;
+
+
+
 
 /***************************
         CREATE BOARD
 ****************************/
 let board = [];
-
 
     // Create Rows
 for (r=0; r<num_rows; r++) {
@@ -23,10 +39,10 @@ for (r=0; r<num_rows; r++) {
     for (c=0; c<num_cols; c++) {
         arr.push(0);
 
-        // Add a class id.. THEY CAN NOT START WITH A NUMBER!!!
+        // Add a class id.. THEY CAN NOT START WITH A NUMBER NOR WITH '-' !!!
         // Add the squares to the row
         let square = document.createElement('div');
-        square.className = '-'+r+c;
+        square.className = 'cell-'+r+c;
         row.appendChild(square);
     }
 
@@ -36,17 +52,28 @@ for (r=0; r<num_rows; r++) {
 }
 
 
+
+
 /************************************
     ADD SHIP TO THE BOARD RANDOMLY
 *************************************
 */
+
+addShip(5); // Carrier
+addShip(4); // Battleship
+addShip(3); // Destroyer
+addShip(3); // Submarine
+addShip(2); // Patrol Boat
+console.log(board);
+
+
 function addShip(ship_length) {
 
-    let done = false;  let count = 10;
+    let done = false;
 
     // Loop until all positions are put in place, else pick another random spot and start again
     while (!done) {
-count--; if (!count) done = true;
+
         // First position randomly picked.. row and column
         let r = getRandom(num_rows);
         let c = getRandom(num_cols);
@@ -56,7 +83,7 @@ count--; if (!count) done = true;
         // If the spot randomly selected is empty
         if (board[r][c] === 0) {
 
-            ship_position = position(r, c, ship_length); console.log(ship_position);
+            ship_position = position(r, c, ship_length);
 
             let available = checkAvailability(ship_position);
 
@@ -67,6 +94,7 @@ count--; if (!count) done = true;
                     board[ ship_position[p][0] ][ ship_position[p][1] ] = ship_length;
                 }
 
+                number_of_hits_to_win += ship_length;
                 done = true;
             }
 
@@ -74,20 +102,71 @@ count--; if (!count) done = true;
     }//while (!done)
 }
 
-addShip(5);
-console.log(board);
 
-addShip(2);
-console.log(board);
 
-addShip(4);
-console.log(board);
 
-addShip(3);
-console.log(board);
 
-addShip(3);
-console.log(board);
+/****************************
+ Show the board for a second
+*****************************/
+
+function show() {
+    ready_button.style.zIndex = '-1';
+    showShips('red');
+    setTimeout( () => showShips('#0ca4ff'), 2000); // setTimeOut( function () { showShips('green'); }, 1000);
+}
+
+function showShips(color) {
+    for (r in board)
+        for (c in board[r])
+            if (board[r][c] !== 0)
+                document.querySelector('.cell-'+r+c).style.background = color;
+}
+
+
+
+
+
+
+/****************************
+         TAKE A SHOT
+*****************************/
+
+function shoot(element) {
+
+    let e = element.target;
+
+    /* There's the currentTarget (element where the EventListener was added) rows and squares..
+       make sure it's the squares that are being selected. I'm checking this by looking at the class.
+    */
+    if (e.className.indexOf('cell') !== -1) {
+
+        // Extract row and column from class name
+        let r = e.className.substr(5,1);
+        let c = e.className.substr(6,1);
+
+        // HIT
+        if (board[r][c] > 0) {
+            e.style.background = 'red';
+            number_of_hits_to_win--;
+        }
+
+        // MISSED
+        else {
+            e.style.background = 'gray';
+            setTimeout( () => e.style.background = '#0ca4ff', 5000);
+            missed_shots_available--;
+        }
+
+        // Check to see if the player won or lost
+        if (missed_shots_available === 0)
+            window.alert('TRY AGAIN.. RELOAD PAGE');
+
+        else if (number_of_hits_to_win === 0)
+            window.alert("YOU'VE WON!");
+    }
+}
+
 
 
 
@@ -144,6 +223,7 @@ function position(r, c, ship_length) {
     return arr;
 }
 
+// Goes through every position in the board to see if it is taken or out of bounce
 function checkAvailability(arr) {
     for (i in arr) {
         let r = arr[i][0];
@@ -152,26 +232,4 @@ function checkAvailability(arr) {
             return false;
     }
     return true;
-}
-
-// TAKE A SHOT
-function shoot(element) {
-
-    let e = element.target;
-
-    /* There's the currentTarget (element where the EventListener was added) rows and squares..
-       make sure it's the squares that are being selected. I'm checking this by looking at the class.
-    */
-    if (e.className.substr(0,1) === '-') {
-
-        // Extract row and column from class name
-        let r = e.className.substr(1,1);
-        let c = e.className.substr(2,1);
-
-        if (board[r][c] > 0) {
-            e.style.background = 'red';
-        }
-        else
-            e.style.background = 'gray';
-    }
 }
