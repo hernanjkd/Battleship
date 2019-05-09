@@ -16,7 +16,7 @@ ready_button.addEventListener('click', show);
 
 // Set global variables. Adding each ship will increment the number of hits to win
 let number_of_hits_to_win = 0;
-let missed_shots_available = 3;
+let missed_shots_available = 5;
 
 
 
