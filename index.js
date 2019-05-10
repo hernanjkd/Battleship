@@ -1,7 +1,10 @@
 
-let board_div = document.querySelector('.board');
 let num_rows = 10;
 let num_cols = 10;
+let missed_shots_available = 5;
+
+
+let board_div = document.querySelector('.board');
 
 // Position board in the middle
 board_div.style.width = (num_cols * 40) + 'px';
@@ -16,7 +19,6 @@ ready_button.addEventListener('click', show);
 
 // Set global variables. Adding each ship will increment the number of hits to win
 let number_of_hits_to_win = 0;
-let missed_shots_available = 5;
 
 
 
